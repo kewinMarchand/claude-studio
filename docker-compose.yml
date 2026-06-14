@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    image: claude-studio
+    ports:
+      - '${PORT:-3210}:3000'
+    environment:
+      # Racine des projets telle que vue DANS le conteneur (cf. volume ci-dessous).
+      CLAUDE_STUDIO_PROJECTS_ROOT: /projects
+      CLAUDE_BIN: claude
+    volumes:
+      # Authentification de l'abonnement Claude (login du CLI sur l'hôte).
+      - ${HOME}/.claude:/root/.claude
+      # Dossiers de travail que Claude pourra lire/modifier.
+      - ${PROJECTS_ROOT:-${HOME}/Travail}:/projects
+    restart: unless-stopped
