@@ -68,8 +68,12 @@ ses réponses, ses appels d'outils et leurs résultats.
 
 ```bash
 make install     # npm ci
-make dev         # http://localhost:3210
+make up           # http://localhost:3210 (coupe l'instance précédente au besoin)
 ```
+
+> `make up` libère d'abord le port (équivaut à un `make down` automatique) puis lance le serveur de
+> dev — pas besoin de couper la session précédente à la main. `make dev` reste disponible si tu
+> veux démarrer sans toucher à l'existant.
 
 > Claude Studio écoute sur le port **3210** (pas 3000) pour éviter les conflits avec d'autres
 > projets qui tournent sur 3000.
@@ -212,7 +216,8 @@ src/
 | Commande            | Description                                  |
 | ------------------- | -------------------------------------------- |
 | `make install`      | Installe les dépendances                     |
-| `make dev`          | Serveur de développement                     |
+| `make up`           | Serveur de dev (coupe l'instance précédente) |
+| `make dev`          | Serveur de développement (sans couper)       |
 | `make build`        | Build de production                          |
 | `make start`        | Serveur de production                        |
 | `make down`         | Arrête le serveur local sur le port          |

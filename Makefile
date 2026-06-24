@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build start down typecheck docker-build docker-up docker-down docker-logs docker-sh clean
+.PHONY: help install up dev build start down typecheck docker-build docker-up docker-down docker-logs docker-sh clean
 
 # Variables surchargeables : make docker-up PORT=4000
 # 3210 (et non 3000) pour éviter les conflits de port avec d'autres projets.
@@ -16,7 +16,11 @@ help: ## Affiche cette aide
 install: ## Installe les dépendances (npm ci)
 	npm ci
 
-dev: ## Lance le serveur de développement (hot reload)
+up: ## Lance le serveur de dev en coupant d'abord l'instance précédente sur le port
+	@$(MAKE) --no-print-directory down
+	npm run dev
+
+dev: ## Lance le serveur de développement (hot reload, sans couper l'existant)
 	npm run dev
 
 build: ## Build de production
