@@ -5,7 +5,7 @@
 # 3210 (et non 3000) pour éviter les conflits de port avec d'autres projets.
 PORT ?= 3210
 IMAGE ?= claude-studio
-PROJECTS_ROOT ?= $(HOME)/Travail
+PROJECTS_ROOT ?= $(HOME)
 
 help: ## Affiche cette aide
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

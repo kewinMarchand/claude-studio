@@ -94,7 +94,7 @@ Copie `.env.example` vers `.env.local` si tu veux surcharger les valeurs par dé
 
 | Variable                       | Rôle                                                          | Défaut          |
 | ------------------------------ | ------------------------------------------------------------ | --------------- |
-| `CLAUDE_STUDIO_PROJECTS_ROOT`  | Racine des dossiers proposés dans le sélecteur de cwd        | `~/Travail`     |
+| `CLAUDE_STUDIO_PROJECTS_ROOT`  | Racine des dossiers proposés dans le sélecteur de cwd        | `~` (HOME)      |
 | `CLAUDE_BIN`                   | Chemin du binaire `claude` s'il n'est pas dans le `PATH`     | `claude`        |
 
 ---

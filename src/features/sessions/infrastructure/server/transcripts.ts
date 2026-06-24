@@ -10,7 +10,7 @@ const PROJECTS_DIR = join(homedir(), '.claude', 'projects')
 const DAY_MS = 24 * 60 * 60 * 1000
 
 // Racine des projets : un cwd sous cette racine est rattaché à son dossier de 1er niveau.
-const PROJECTS_ROOT = process.env.CLAUDE_STUDIO_PROJECTS_ROOT || join(homedir(), 'Travail')
+const PROJECTS_ROOT = process.env.CLAUDE_STUDIO_PROJECTS_ROOT || homedir()
 
 /** Rattache un cwd à son projet (dossier direct sous la racine), pour regrouper les sous-dossiers. */
 const projectOf = (cwd: string): { label: string; root: string } => {

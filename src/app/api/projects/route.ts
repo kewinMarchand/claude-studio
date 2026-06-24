@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 export const runtime = 'nodejs'
 
-const ROOT = process.env.CLAUDE_STUDIO_PROJECTS_ROOT || join(homedir(), 'Travail')
+const ROOT = process.env.CLAUDE_STUDIO_PROJECTS_ROOT || homedir()
 
 export async function GET(): Promise<Response> {
   try {

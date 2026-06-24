@@ -12,5 +12,5 @@ services:
       # Authentification de l'abonnement Claude (login du CLI sur l'hôte).
       - ${HOME}/.claude:/root/.claude
       # Dossiers de travail que Claude pourra lire/modifier.
-      - ${PROJECTS_ROOT:-${HOME}/Travail}:/projects
+      - ${PROJECTS_ROOT:-${HOME}}:/projects
     restart: unless-stopped
