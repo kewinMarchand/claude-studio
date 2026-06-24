@@ -57,6 +57,8 @@ ses réponses, ses appels d'outils et leurs résultats.
 ## Prérequis
 
 - **Node.js ≥ 20** (testé sur 24) et **npm**.
+- **`make`** (GNU Make) pour les raccourcis de commandes — présent par défaut sur macOS et la
+  plupart des distributions Linux (`make --version` pour vérifier).
 - Le **CLI `claude`** installé et **connecté** (`claude` lancé au moins une fois, login effectué).
 - *(Optionnel)* **Docker** + **Docker Compose** pour l'exécution conteneurisée.
 
@@ -88,14 +90,27 @@ make start
 
 ---
 
-## Configuration
+## Variables à renseigner
 
-Copie `.env.example` vers `.env.local` si tu veux surcharger les valeurs par défaut :
+**Aucune variable n'est obligatoire** : l'app fonctionne sans configuration (pas de clé API,
+authentification via ton abonnement Claude). Les variables ci-dessous servent uniquement à
+surcharger les valeurs par défaut. Pour les définir, copie le modèle puis édite-le :
 
-| Variable                       | Rôle                                                          | Défaut          |
-| ------------------------------ | ------------------------------------------------------------ | --------------- |
-| `CLAUDE_STUDIO_PROJECTS_ROOT`  | Racine des dossiers proposés dans le sélecteur de cwd        | `~` (HOME)      |
-| `CLAUDE_BIN`                   | Chemin du binaire `claude` s'il n'est pas dans le `PATH`     | `claude`        |
+```bash
+cp .env.example .env.local
+```
+
+| Variable                      | Rôle                                                                            | Défaut       | Obligatoire |
+| ----------------------------- | ------------------------------------------------------------------------------- | ------------ | ----------- |
+| `CLAUDE_STUDIO_PROJECTS_ROOT` | Racine à partir de laquelle naviguer pour choisir le dossier de travail         | `~` (HOME)   | Non         |
+| `CLAUDE_BIN`                  | Chemin du binaire `claude` s'il n'est pas dans le `PATH` du serveur Next        | `claude`     | Non         |
+
+- **`CLAUDE_STUDIO_PROJECTS_ROOT`** — le sélecteur de dossier de travail part de ce dossier et
+  permet de descendre dans ses sous-dossiers (la navigation ne remonte jamais au-dessus). Laisse
+  vide pour partir du HOME, ou pointe-le sur ton dossier de code (ex. `/home/moi/projets`).
+- **`CLAUDE_BIN`** — utile si `claude` est installé hors `PATH` (ex. `~/.local/bin/claude`).
+
+> Les valeurs réelles vivent dans `.env.local`, **ignoré par git** — rien de sensible n'est versionné.
 
 ---
 
@@ -161,7 +176,7 @@ Navigateur ──POST /api/chat──▶ Route Node ──spawn──▶ claude 
 src/
   app/
     api/chat/route.ts            # spawn claude + flux SSE
-    api/projects/route.ts        # liste les dossiers de travail
+    api/projects/route.ts        # navigation dans les dossiers (sous-dossiers du root)
     api/sessions/route.ts        # liste l'historique des sessions
     api/sessions/[id]/route.ts   # recharge les messages d'une session
     api/usage/route.ts           # agrégat d'usage hebdomadaire (transcripts)
@@ -180,7 +195,7 @@ src/
     sessions/
       domain/ · application/     # useSessions, useUsage, useUsageLimits
       infrastructure/server/     # transcripts.ts (coût + agrégats), usageLimits.ts
-      ui/                        # Sidebar, SessionHistory, UsagePanel, ProjectPicker
+      ui/                        # Sidebar, SessionBrowser, UsagePanel, FileViewer
     capabilities/
       domain/ · application/     # useCapabilities
       infrastructure/server/     # capabilities.ts (capture l'event init)
@@ -220,16 +235,6 @@ src/
   sous-processus `claude` ; le premier chargement prend quelques secondes (le % d'abonnement est ensuite
   rafraîchi après chaque tour).
 - Build : un *warning* Turbopack NFT (le runner utilise `child_process`) est bénin en local.
-
----
-
-## Dépannage
-
-**Redirection vers `/fr` puis 404.** Symptôme d'un autre projet Next (next-intl) ayant tourné sur le
-même port et laissé un **redirect 308 en cache** dans le navigateur (les 308 sont mis en cache de façon
-permanente). Claude Studio écoute désormais sur le port **3210** pour éviter ce conflit. Si tu vois
-encore la redirection sur un onglet ouvert depuis longtemps : recharge en vidant le cache
-(Ctrl+Maj+R) ou efface les données du site pour cette origine.
 
 ---
 

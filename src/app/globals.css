@@ -1667,6 +1667,119 @@ pre {
   color: var(--accent);
 }
 
+/* ---------- Sélecteur de dossier de travail (navigable) ---------- */
+.wpick {
+  position: relative;
+}
+.wpick__trigger {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wpick__trigger:hover {
+  border-color: var(--accent);
+}
+/* Variante pastille au-dessus du composer */
+.wpick--composer .wpick__trigger {
+  min-height: 32px;
+  max-width: 220px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--bg-elev);
+  font-size: 12px;
+}
+.wpick__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60; /* au-dessus du composer et du contenu */
+  width: max(260px, 100%);
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+/* Le composer est en bas de l'écran : ouvrir le panneau vers le haut */
+.wpick--composer .wpick__panel {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+.wpick__path {
+  margin: 2px 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wpick__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wpick__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+}
+.wpick__item:hover {
+  background: var(--bg-elev-2);
+}
+.wpick__item--up {
+  color: var(--text-muted);
+}
+.wpick__icon {
+  font-size: 13px;
+}
+.wpick__empty {
+  padding: 10px 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.wpick__choose {
+  margin-top: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wpick__choose:hover {
+  background: color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
 /* ---------- Bouton infos du contexte ---------- */
 .ctx__info {
   border: 1px solid var(--border);

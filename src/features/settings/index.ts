@@ -1,7 +1,6 @@
 export { useSettings } from '@/features/settings/application/useSettings'
 export type { UseSettings } from '@/features/settings/application/useSettings'
-export { useProjects } from '@/features/settings/application/useProjects'
-export type { Project } from '@/features/settings/application/useProjects'
+export { WorkspacePicker } from '@/features/settings/ui/WorkspacePicker'
 export { SettingsDrawer } from '@/features/settings/ui/SettingsDrawer'
 export { MODELS, PERMISSION_MODES, EFFORT_LEVELS } from '@/features/settings/domain/settings'
 export type { Settings } from '@/features/settings/domain/settings'

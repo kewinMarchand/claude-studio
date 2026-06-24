@@ -2,11 +2,9 @@
 
 import type { ChangeEvent } from 'react'
 
-import type { Project } from '@/features/settings'
+import { WorkspacePicker } from '@/features/settings'
 
 interface ComposerToolsProps {
-  projects: Project[]
-  rootLabel: string
   cwd: string
   onChangeCwd: (path: string) => void
   skills: string[]
@@ -22,15 +20,7 @@ const HINT = [
   '• Définis le critère de réussite (« les tests passent », « build vert »…).',
 ].join('\n')
 
-export const ComposerTools = ({
-  projects,
-  rootLabel,
-  cwd,
-  onChangeCwd,
-  skills,
-  agents,
-  onInsert,
-}: ComposerToolsProps) => {
+export const ComposerTools = ({ cwd, onChangeCwd, skills, agents, onInsert }: ComposerToolsProps) => {
   const pick = (build: (v: string) => string) => (e: ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value
     if (v) onInsert(build(v))
@@ -39,20 +29,7 @@ export const ComposerTools = ({
 
   return (
     <div className="composer-tools">
-      <select
-        className="composer-tools__workspace"
-        value={cwd}
-        onChange={(e) => onChangeCwd(e.target.value)}
-        aria-label="Espace de travail"
-        title="Espace de travail (dossier où Claude opère)"
-      >
-        <option value="">{rootLabel || 'Dossier par défaut'}</option>
-        {projects.map((p) => (
-          <option key={p.path} value={p.path}>
-            {p.name}
-          </option>
-        ))}
-      </select>
+      <WorkspacePicker value={cwd} onChange={onChangeCwd} className="wpick--composer" />
 
       <select className="composer-tools__select" defaultValue="" onChange={pick((v) => `/${v} `)} aria-label="Insérer un skill">
         <option value="">+ Skill</option>

@@ -3,15 +3,12 @@
 import { useEffect } from 'react'
 
 import type { Session } from '@/features/sessions/domain/session'
-import { ProjectPicker } from '@/features/sessions/ui/ProjectPicker'
 import { SessionBrowser } from '@/features/sessions/ui/SessionBrowser'
-import type { Project } from '@/features/settings'
+import { WorkspacePicker } from '@/features/settings'
 
 interface SidebarProps {
   open: boolean
   onClose: () => void
-  projects: Project[]
-  rootLabel: string
   cwd: string
   onChangeCwd: (path: string) => void
   onNewConversation: () => void
@@ -26,8 +23,6 @@ interface SidebarProps {
 export const Sidebar = ({
   open,
   onClose,
-  projects,
-  rootLabel,
   cwd,
   onChangeCwd,
   onNewConversation,
@@ -64,7 +59,10 @@ export const Sidebar = ({
         </header>
 
         <div className="drawer__body">
-          <ProjectPicker projects={projects} rootLabel={rootLabel} value={cwd} onChange={onChangeCwd} />
+          <div className="picker">
+            <span className="picker__label">Dossier de travail</span>
+            <WorkspacePicker value={cwd} onChange={onChangeCwd} className="wpick--field" />
+          </div>
 
           <button type="button" className="sidebar__new" onClick={onNewConversation}>
             + Nouvelle conversation

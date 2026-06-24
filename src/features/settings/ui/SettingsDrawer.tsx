@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 
-import { useProjects } from '@/features/settings/application/useProjects'
 import type { UseSettings } from '@/features/settings/application/useSettings'
 import { EFFORT_LEVELS, MODELS, PERMISSION_MODES } from '@/features/settings/domain/settings'
+import { WorkspacePicker } from '@/features/settings/ui/WorkspacePicker'
 
 interface SettingsDrawerProps {
   open: boolean
@@ -17,7 +17,6 @@ interface SettingsDrawerProps {
 const ACCENTS = ['#f59e0b', '#14b8a6', '#6366f1', '#10b981', '#ef4444', '#ec4899', '#06b6d4']
 
 export const SettingsDrawer = ({ open, onClose, settings, update, reset }: SettingsDrawerProps) => {
-  const { root, projects } = useProjects()
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -103,21 +102,14 @@ export const SettingsDrawer = ({ open, onClose, settings, update, reset }: Setti
               )}
             </label>
 
-            <label className="field">
+            <div className="field">
               <span className="field__label">Dossier de travail</span>
-              <select
-                className="field__control"
+              <WorkspacePicker
                 value={settings.cwd}
-                onChange={(e) => update('cwd', e.target.value)}
-              >
-                <option value="">{root || 'Dossier par défaut du serveur'}</option>
-                {projects.map((p) => (
-                  <option key={p.path} value={p.path}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                onChange={(path) => update('cwd', path)}
+                className="wpick--field"
+              />
+            </div>
 
             <label className="field">
               <span className="field__label">Instructions système (optionnel)</span>

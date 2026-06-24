@@ -24,12 +24,11 @@ import {
   useUsageLimits,
   type ViewableFile,
 } from '@/features/sessions'
-import { MODELS, SettingsDrawer, useProjects, useSettings } from '@/features/settings'
+import { MODELS, SettingsDrawer, useSettings } from '@/features/settings'
 
 export const StudioApp = () => {
   const { settings, ready, update, reset: resetSettings } = useSettings()
   const chat = useChat()
-  const { root, projects } = useProjects()
   const sessionsState = useSessions()
   const usageState = useUsage()
   const limitsState = useUsageLimits()
@@ -220,8 +219,6 @@ export const StudioApp = () => {
         <footer className="studio__footer">
           <div className="composer-wrap">
             <ComposerTools
-              projects={projects}
-              rootLabel={root}
               cwd={settings.cwd}
               onChangeCwd={handleChangeCwd}
               skills={capabilities.data.skills.map((i) => i.name)}
@@ -242,8 +239,6 @@ export const StudioApp = () => {
       <Sidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        projects={projects}
-        rootLabel={root}
         cwd={settings.cwd}
         onChangeCwd={handleChangeCwd}
         onNewConversation={handleNewConversation}
