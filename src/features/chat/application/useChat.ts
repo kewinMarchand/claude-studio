@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from 'react'
 
 import { blockToText } from '@/common/lib/content'
+import { commandName, isInteractiveOnlyCommand } from '@/features/chat/domain/commands'
 import type { ClaudeEvent } from '@/features/chat/domain/events'
 import { Chat } from '@/features/chat/domain/events'
 import {
@@ -51,19 +52,22 @@ const applyEvent = (event: ClaudeEvent.Any, prev: Chat.Message[]): Chat.Message[
       id: PENDING,
       role: 'assistant' as const,
       text: '',
+      thinking: '',
       toolCalls: [],
     }
 
     let text = current.text
+    let thinking = current.thinking
     const toolCalls = [...current.toolCalls]
     for (const block of blocks) {
       if (block.type === 'text') text += block.text
+      else if (block.type === 'thinking') thinking += block.thinking
       else if (block.type === 'tool_use') {
         toolCalls.push({ id: block.id, name: block.name, input: block.input })
       }
     }
 
-    const updated: Chat.Message = { ...current, text, toolCalls }
+    const updated: Chat.Message = { ...current, text, thinking, toolCalls }
     return prev.some((m) => m.id === PENDING)
       ? prev.map((m) => (m.id === PENDING ? updated : m))
       : [...prev, updated]
@@ -113,7 +117,22 @@ export const useChat = (): UseChat => {
       const text = prompt.trim()
       if (!text || status === 'streaming') return
 
-      setMessages((prev) => [...prev, { id: nextId(), role: 'user', text, toolCalls: [] }])
+      setMessages((prev) => [...prev, { id: nextId(), role: 'user', text, thinking: '', toolCalls: [] }])
+
+      if (isInteractiveOnlyCommand(text)) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: nextId(),
+            role: 'assistant',
+            text: `La commande \`/${commandName(text)}\` est interactive : elle est gérée par l'interface du CLI et n'a pas d'équivalent en mode headless. Elle n'est donc pas disponible dans Claude Studio.`,
+            thinking: '',
+            toolCalls: [],
+          },
+        ])
+        return
+      }
+
       setStatus('streaming')
       setError(null)
 

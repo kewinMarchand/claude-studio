@@ -525,6 +525,34 @@ pre {
   margin-bottom: 10px;
 }
 
+.bubble__thinking {
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+.bubble__thinking > summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: 600;
+  list-style: none;
+}
+.bubble__thinking > summary::-webkit-details-marker {
+  display: none;
+}
+.bubble__thinking > summary::before {
+  content: '🧠 ';
+}
+.bubble__thinking[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+.bubble__thinking > .markdown {
+  padding: 4px 12px 12px;
+  font-size: 0.95em;
+}
+
 /* ---------- Markdown ---------- */
 .markdown {
   line-height: 1.65;
@@ -643,6 +671,23 @@ pre {
 .tool-card__pending {
   color: var(--text-muted);
   font-style: italic;
+}
+
+.plan-card {
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
+  padding: 10px 14px;
+}
+.plan-card__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 6px;
 }
 
 /* ---------- Empty / typing / alert ---------- */
@@ -1682,4 +1727,45 @@ pre {
   font-size: 12px;
   word-break: break-all;
   user-select: all;
+}
+
+/* ---------- Sous-blocs repliables (Conversations / Instructions / Mémoire) ---------- */
+.disc + .disc {
+  margin-top: 2px;
+}
+.disc__head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.disc__head:hover {
+  background: var(--bg-elev-2);
+}
+.disc__chevron {
+  color: var(--text-muted);
+  font-size: 10px;
+  width: 10px;
+}
+.disc__title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.disc__count {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.disc__body {
+  padding: 2px 0 6px 16px;
 }

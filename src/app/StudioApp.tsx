@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  commandName,
   Composer,
   ComposerTools,
   ContextMeter,
@@ -62,9 +63,11 @@ export const StudioApp = () => {
   const slashCommands = [...capabilities.data.commands, ...capabilities.data.skills].map((i) => i.name)
 
   // Reflète la session courante dans l'URL (marque-pageable).
+  // On n'écrit QUE lorsqu'une session existe : sinon le montage effacerait
+  // le `?session=` avant que la restauration ait pu le lire. Le nettoyage de
+  // l'URL est fait explicitement par les actions de reset (cf. clearSessionUrl).
   useEffect(() => {
-    const url = chat.sessionId ? `?session=${chat.sessionId}` : window.location.pathname
-    window.history.replaceState(null, '', url)
+    if (chat.sessionId) window.history.replaceState(null, '', `?session=${chat.sessionId}`)
   }, [chat.sessionId])
 
   // Au montage, reprend la session indiquée par l'URL.
@@ -74,17 +77,30 @@ export const StudioApp = () => {
     if (id) void loadSession(id)
   }, [loadSession])
 
+  // Onglet : signale visuellement que le modèle travaille / a terminé.
+  useEffect(() => {
+    document.title = chat.status === 'streaming' ? '● Claude travaille… · Claude Studio' : 'Claude Studio'
+  }, [chat.status])
+
+  const clearSessionUrl = () => window.history.replaceState(null, '', window.location.pathname)
+
   const handleHome = () => {
     chat.reset()
+    clearSessionUrl()
     setSidebarOpen(false)
   }
 
   const handleNewConversation = () => {
     chat.reset()
+    clearSessionUrl()
     setSidebarOpen(false)
   }
 
   const handleSend = (prompt: string) => {
+    if (commandName(prompt) === 'clear') {
+      handleNewConversation()
+      return
+    }
     void chat.send(prompt, {
       model: settings.model,
       permissionMode: settings.permissionMode,
@@ -102,7 +118,10 @@ export const StudioApp = () => {
   const handleDeleteSession = (id: string) => {
     if (!window.confirm('Supprimer cette conversation ? Cette action est définitive.')) return
     void fetch(`/api/sessions/${id}`, { method: 'DELETE' }).then(() => {
-      if (chat.sessionId === id) chat.reset()
+      if (chat.sessionId === id) {
+        chat.reset()
+        clearSessionUrl()
+      }
       refreshSessions()
     })
   }
@@ -110,6 +129,7 @@ export const StudioApp = () => {
   const handleChangeCwd = (path: string) => {
     update('cwd', path)
     chat.reset()
+    clearSessionUrl()
   }
 
   const retryLast = () => {

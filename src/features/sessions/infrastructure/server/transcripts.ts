@@ -108,8 +108,16 @@ const firstUserText = (lines: RawLine[]): string => {
   return ''
 }
 
-/** Session dont le 1er message utilisateur est un wrapper de commande (invocation /xxx, sonde…). */
-const isCommandWrapperSession = (lines: RawLine[]): boolean => isCommandWrapper(firstUserText(lines))
+const COMMAND_NAME_RE = /<command-name>\s*\/?([\w:-]+)\s*<\/command-name>/i
+
+/** Titre `/xxx` quand la session a été lancée par une commande (1er message = wrapper). */
+const commandTitle = (lines: RawLine[]): string => {
+  const m = firstUserText(lines).match(COMMAND_NAME_RE)
+  return m ? `/${m[1]}` : ''
+}
+
+/** Une session sans aucune réponse de l'assistant est une sonde / commande avortée (illisible). */
+const hasAssistantReply = (lines: RawLine[]): boolean => lines.some((l) => l.type === 'assistant')
 
 const summarize = (lines: RawLine[], id: string, mtimeMs: number): Session.Summary => {
   const tokens = emptyTokens()
@@ -130,8 +138,13 @@ const summarize = (lines: RawLine[], id: string, mtimeMs: number): Session.Summa
   }
 
   if (!title) {
-    const raw = cleanTitle(firstUserText(lines))
-    title = raw ? raw.slice(0, 80) : 'Sans titre'
+    const cmd = commandTitle(lines)
+    if (cmd) {
+      title = cmd
+    } else {
+      const raw = cleanTitle(firstUserText(lines))
+      title = raw ? raw.slice(0, 80) : 'Sans titre'
+    }
   }
 
   const proj = projectOf(cwd)
@@ -191,8 +204,8 @@ export const listSessions = async (limit = 250): Promise<Session.Summary[]> => {
     files.map(async (f) => {
       try {
         const lines = parseLines(await readFile(f.path, 'utf8'))
-        // Exclut les invocations de commande / sondes (1er message = wrapper CLI), illisibles.
-        if (isCommandWrapperSession(lines)) return null
+        // Exclut les sondes / commandes sans réponse (ex. /clear, /usage), illisibles.
+        if (!hasAssistantReply(lines)) return null
         const summary = summarize(lines, f.id, f.mtimeMs)
         if (summary.messageCount === 0) return null
         if (summary.title === '.' || summary.title.startsWith('/usage')) return null
@@ -280,16 +293,17 @@ export const loadSessionMessages = async (
     }
 
     if (l.type === 'assistant' && Array.isArray(content)) {
-      const msg: Chat.Message = { id: `h${seq++}`, role: 'assistant', text: '', toolCalls: [] }
+      const msg: Chat.Message = { id: `h${seq++}`, role: 'assistant', text: '', thinking: '', toolCalls: [] }
       for (const block of content as Array<Record<string, unknown>>) {
         if (block.type === 'text') msg.text += String(block.text ?? '')
+        else if (block.type === 'thinking') msg.thinking += String(block.thinking ?? '')
         else if (block.type === 'tool_use') {
           const call: Chat.ToolCall = { id: String(block.id), name: String(block.name), input: block.input }
           msg.toolCalls.push(call)
           callIndex.set(call.id, call)
         }
       }
-      if (msg.text || msg.toolCalls.length) messages.push(msg)
+      if (msg.text || msg.thinking || msg.toolCalls.length) messages.push(msg)
     } else if (l.type === 'user') {
       if (Array.isArray(content)) {
         let userText = ''
@@ -301,10 +315,10 @@ export const loadSessionMessages = async (
           }
         }
         if (userText.trim()) {
-          messages.push({ id: `h${seq++}`, role: 'user', text: cleanWrapper(userText), toolCalls: [] })
+          messages.push({ id: `h${seq++}`, role: 'user', text: cleanWrapper(userText), thinking: '', toolCalls: [] })
         }
       } else if (typeof content === 'string' && content.trim()) {
-        messages.push({ id: `h${seq++}`, role: 'user', text: cleanWrapper(content), toolCalls: [] })
+        messages.push({ id: `h${seq++}`, role: 'user', text: cleanWrapper(content), thinking: '', toolCalls: [] })
       }
     }
   }

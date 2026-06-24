@@ -33,16 +33,14 @@ export const MessageList = ({ messages, status, error, cwd, onRetry, homeExtra }
     )
   }
 
-  const lastIsAssistant = messages.at(-1)?.role === 'assistant'
-
   return (
     <div className="messages" role="log" aria-live="polite" aria-busy={streaming}>
       {messages.map((m) => (
         <MessageBubble key={m.id} message={m} streaming={streaming} />
       ))}
 
-      {streaming && !lastIsAssistant && (
-        <div className="typing" aria-label="Claude réfléchit">
+      {streaming && (
+        <div className="typing" aria-label="Claude travaille">
           <span />
           <span />
           <span />

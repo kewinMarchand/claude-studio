@@ -18,6 +18,12 @@ export const MessageBubble = ({ message, streaming }: MessageBubbleProps) => {
         {isUser ? 'Moi' : 'C'}
       </div>
       <div className="bubble__content">
+        {message.thinking && (
+          <details className="bubble__thinking" open={streaming && !message.text}>
+            <summary>{streaming && !message.text ? 'Réflexion en cours…' : 'Raisonnement'}</summary>
+            <Markdown>{message.thinking}</Markdown>
+          </details>
+        )}
         {message.toolCalls.length > 0 && (
           <div className="bubble__tools">
             {message.toolCalls.map((call) => (

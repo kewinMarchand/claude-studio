@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { formatCost, formatRelative } from '@/common/lib/format'
 import type { Session } from '@/features/sessions/domain/session'
-import { ProjectFiles } from '@/features/sessions/ui/ProjectFiles'
+import { ProjectAccordion } from '@/features/sessions/ui/ProjectAccordion'
 
 interface SessionBrowserProps {
   sessions: Session.Summary[]
@@ -45,9 +44,8 @@ export const SessionBrowser = ({
       g.sessions.push(s)
       map.set(s.projectRoot, g)
     }
-    return [...map.values()].sort(
-      (a, b) =>
-        Math.max(...b.sessions.map((s) => s.updatedAt)) - Math.max(...a.sessions.map((s) => s.updatedAt)),
+    return [...map.values()].sort((a, b) =>
+      a.project.localeCompare(b.project, 'fr', { sensitivity: 'base' }),
     )
   }, [sessions, q])
 
@@ -82,59 +80,20 @@ export const SessionBrowser = ({
         <p className="history__state">{q ? 'Aucun résultat.' : 'Aucune conversation.'}</p>
       ) : (
         <div className="accordions">
-          {groups.map((g) => {
-            const expanded = q ? true : open.has(g.root)
-            return (
-              <div key={g.root} className="accordion" data-open={expanded}>
-                <button
-                  type="button"
-                  className="accordion__head"
-                  aria-expanded={expanded}
-                  onClick={() => toggleOpen(g.root)}
-                >
-                  <span className="accordion__chevron" aria-hidden="true">
-                    {expanded ? '▾' : '▸'}
-                  </span>
-                  <span className="accordion__name">{g.project}</span>
-                  <span className="accordion__count">{g.sessions.length}</span>
-                </button>
-
-                {expanded && (
-                  <div className="accordion__body">
-                    <ProjectFiles cwd={g.root} onOpenFile={onOpenFile} />
-
-                    <span className="accordion__sub">Conversations</span>
-                    <ul className="history">
-                      {g.sessions.map((s) => (
-                        <li key={s.id} className="history__li">
-                          <button
-                            type="button"
-                            className="history__item"
-                            aria-current={s.id === activeId}
-                            onClick={() => onSelect(s.id)}
-                          >
-                            <span className="history__title">{s.title}</span>
-                            <span className="history__meta">
-                              <span>{formatRelative(s.updatedAt, now)}</span>
-                              <span className="history__cost">{formatCost(s.costUsd)}</span>
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            className="history__del"
-                            aria-label={`Supprimer « ${s.title} »`}
-                            onClick={() => onDelete(s.id)}
-                          >
-                            ✕
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          {groups.map((g) => (
+            <ProjectAccordion
+              key={g.root}
+              group={g}
+              expanded={q ? true : open.has(g.root)}
+              searchActive={Boolean(q)}
+              now={now}
+              activeId={activeId}
+              onToggle={() => toggleOpen(g.root)}
+              onSelect={onSelect}
+              onDelete={onDelete}
+              onOpenFile={onOpenFile}
+            />
+          ))}
         </div>
       )}
     </div>

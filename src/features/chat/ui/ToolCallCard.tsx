@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { Markdown } from '@/common/ui/Markdown'
 import type { Chat } from '@/features/chat/domain/events'
 
 interface ToolCallCardProps {
@@ -16,8 +17,27 @@ const summarize = (input: unknown): string => {
   return typeof key === 'string' ? key : ''
 }
 
+const planText = (input: unknown): string => {
+  if (!input || typeof input !== 'object') return ''
+  const plan = (input as Record<string, unknown>).plan
+  return typeof plan === 'string' ? plan : ''
+}
+
+const PlanCard = ({ plan }: { plan: string }) => (
+  <div className="plan-card">
+    <span className="plan-card__label">Plan</span>
+    <Markdown>{plan}</Markdown>
+  </div>
+)
+
 export const ToolCallCard = ({ call, streaming }: ToolCallCardProps) => {
   const [open, setOpen] = useState(false)
+
+  if (call.name === 'ExitPlanMode') {
+    const plan = planText(call.input)
+    if (plan) return <PlanCard plan={plan} />
+  }
+
   const summary = summarize(call.input)
   const pending = !call.result && streaming
   const state = call.result?.isError ? 'error' : call.result ? 'done' : pending ? 'pending' : 'done'

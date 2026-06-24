@@ -90,6 +90,8 @@ export namespace Chat {
     id: string
     role: Role
     text: string
+    /** Raisonnement (blocs `thinking`) cumulé, affiché dans un volet repliable. */
+    thinking: string
     toolCalls: ToolCall[]
   }
 
