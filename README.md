@@ -69,8 +69,8 @@ make install     # npm ci
 make dev         # http://localhost:3210
 ```
 
-> Claude Studio écoute sur le port **3210** (pas 3000) pour ne pas entrer en conflit avec les projets
-> clients qui tournent sur 3000.
+> Claude Studio écoute sur le port **3210** (pas 3000) pour éviter les conflits avec d'autres
+> projets qui tournent sur 3000.
 
 Sans `make` :
 
@@ -155,7 +155,7 @@ Navigateur ──POST /api/chat──▶ Route Node ──spawn──▶ claude 
      └────────── SSE ─────────────┘   (system/init, assistant, tool_result, result)
 ```
 
-### Structure (conventions PURJUS — features isolées)
+### Structure (features isolées)
 
 ```
 src/

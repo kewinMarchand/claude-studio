@@ -2,7 +2,7 @@
 .PHONY: help install dev build start down typecheck docker-build docker-up docker-down docker-logs docker-sh clean
 
 # Variables surchargeables : make docker-up PORT=4000
-# 3210 (et non 3000) pour ne pas entrer en conflit avec les projets clients.
+# 3210 (et non 3000) pour éviter les conflits de port avec d'autres projets.
 PORT ?= 3210
 IMAGE ?= claude-studio
 PROJECTS_ROOT ?= $(HOME)/Travail
